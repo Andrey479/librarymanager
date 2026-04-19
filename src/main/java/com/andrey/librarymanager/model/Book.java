@@ -34,7 +34,7 @@ public class Book {
     @NotNull
     @PastOrPresent
     @Column(nullable = false)
-    private Integer publicatyonYear;
+    private Integer publicationYear;
 
     @Positive
     @Column(nullable = false)
