@@ -20,14 +20,9 @@ public class AuthorService {
     }
 
     public List<AuthorResponseDTO> listAll() {
-
-        List<Author> authorList = authorRepository.findAll();
-
-        List<AuthorResponseDTO> authorResponse = authorList.stream()
+        return authorRepository.findAll().stream()
                 .map(this::toResponse)
                 .toList();
-
-        return authorResponse;
     }
 
     private Author toEntity(AuthorRequestDTO request) {
