@@ -11,5 +11,4 @@ class LibrarymanagerApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
 }
