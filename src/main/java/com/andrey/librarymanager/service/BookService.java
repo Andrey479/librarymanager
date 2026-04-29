@@ -21,8 +21,11 @@ public class BookService {
     private final AuthorRepository authorRepository;
     private final LoanRepository loanRepository;
 
-    public BookResponseDTO register(BookRequestDTO request){
-        return toResponse(bookRepository.save(toEntity(request)));
+    public BookResponseDTO register(BookRequestDTO request) {
+       if (request.getAuthorsId().isEmpty()) {
+            throw new RuntimeException("lista de autores vazia");
+       }
+       return toResponse(bookRepository.save(toEntity(request)));
     }
 
     public List<BookResponseDTO> listAll(){
@@ -41,15 +44,15 @@ public class BookService {
     }
 
 
-
     private Book toEntity(BookRequestDTO request){
-        Book book = new Book();
-        book.setTitle(request.getTitle());
-        book.setIsbn(request.getIsbn());
-        book.setPublicationYear(request.getPublicationYear());
-        book.setTotalCopies(request.getTotalCopies());
-        book.setAuthors(new HashSet<>(authorRepository.findAllById(request.getAuthorsId())));
-        book.setAvailableCopies(request.getTotalCopies());
+        Book book = Book.builder()
+                .title(request.getTitle())
+                .isbn(request.getIsbn())
+                .publicationYear(request.getPublicationYear())
+                .totalCopies(request.getTotalCopies())
+                .availableCopies(request.getTotalCopies())
+                .authors(new HashSet<>(authorRepository.findAllById(request.getAuthorsId())))
+                .build();
         return book;
     }
 
