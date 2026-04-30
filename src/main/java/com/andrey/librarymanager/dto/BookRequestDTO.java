@@ -1,9 +1,6 @@
 package com.andrey.librarymanager.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,11 +22,11 @@ public class BookRequestDTO {
     private String isbn;
 
     @NotNull
-    @PastOrPresent
     private Integer publicationYear;
 
     @Positive
     private Integer totalCopies;
 
+    @NotEmpty
     private Set<Long> authorsId = new HashSet<>();
 }
