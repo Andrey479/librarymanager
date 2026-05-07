@@ -34,14 +34,14 @@ public class BookService {
                 .toList();
     }
 
-    public void delete(Long id) {
-        boolean haveLoan = loanRepository.existsByBookIdAndStatus(id, LoanStatus.ACTIVE);
-        if (haveLoan) {
-            throw new RuntimeException("O livro tem emprestimo ativo");
-        } else {
-            bookRepository.deleteById(id);
-        }
-    }
+//    public void delete(Long id) {
+//        boolean haveLoan = loanRepository.existsByBookIdAndStatus(id, LoanStatus.ACTIVE);
+//        if (haveLoan) {
+//            throw new RuntimeException("O livro tem emprestimo ativo");
+//        } else {
+//            bookRepository.deleteById(id);
+//        }
+//    }
 
 
     private Book toEntity(BookRequestDTO request){
