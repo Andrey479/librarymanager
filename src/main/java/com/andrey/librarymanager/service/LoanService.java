@@ -2,6 +2,8 @@ package com.andrey.librarymanager.service;
 
 import com.andrey.librarymanager.dto.LoanRequestDTO;
 import com.andrey.librarymanager.dto.LoanResponseDTO;
+import com.andrey.librarymanager.exception.BusinessException;
+import com.andrey.librarymanager.exception.ResourceNotFoundException;
 import com.andrey.librarymanager.model.Book;
 import com.andrey.librarymanager.model.Loan;
 import com.andrey.librarymanager.model.LoanStatus;
@@ -31,12 +33,12 @@ public class LoanService {
         Optional<User> optionalUser = userRepository.findById(request.getUserId());
 
         if (optionalBook.isEmpty() || optionalUser.isEmpty()){
-            throw new RuntimeException("Livro ou Usuario não encontrado");
+            throw new ResourceNotFoundException("Book or User without content");
         }
 
         Book book = optionalBook.get();
         if (book.getAvailableCopies() == 0){
-            throw new RuntimeException();
+            throw new BusinessException("No copies of this book are available for loan.");
         }
 
         boolean hasActiveLoan = loanRepository.existsByBookIdAndUserIdAndStatus(
@@ -45,7 +47,7 @@ public class LoanService {
                 LoanStatus.ACTIVE
         );
         if (hasActiveLoan){
-            throw new RuntimeException("hasActiveLoan");
+            throw new BusinessException("This book already has an active loan with the user.");
         }
 
         book.setAvailableCopies(book.getAvailableCopies() - 1);
@@ -56,7 +58,7 @@ public class LoanService {
 
         Optional<Loan> optionalLoan = loanRepository.findById(loanId);
         if (optionalLoan.isEmpty()){
-            throw new RuntimeException("loan is empty");
+            throw new ResourceNotFoundException("Loan without content");
         }
 
         Loan loan = optionalLoan.get();

@@ -2,6 +2,7 @@ package com.andrey.librarymanager.service;
 
 import com.andrey.librarymanager.dto.BookRequestDTO;
 import com.andrey.librarymanager.dto.BookResponseDTO;
+import com.andrey.librarymanager.exception.ResourceNotFoundException;
 import com.andrey.librarymanager.model.Book;
 import com.andrey.librarymanager.model.LoanStatus;
 import com.andrey.librarymanager.repository.AuthorRepository;
@@ -23,7 +24,7 @@ public class BookService {
 
     public BookResponseDTO register(BookRequestDTO request) {
        if (request.getAuthorsId().isEmpty()) {
-            throw new RuntimeException("lista de autores vazia");
+            throw new ResourceNotFoundException("The list of author IDs is empty.");
        }
        return toResponse(bookRepository.save(toEntity(request)));
     }
@@ -33,16 +34,6 @@ public class BookService {
                 .map(this::toResponse)
                 .toList();
     }
-
-//    public void delete(Long id) {
-//        boolean haveLoan = loanRepository.existsByBookIdAndStatus(id, LoanStatus.ACTIVE);
-//        if (haveLoan) {
-//            throw new RuntimeException("O livro tem emprestimo ativo");
-//        } else {
-//            bookRepository.deleteById(id);
-//        }
-//    }
-
 
     private Book toEntity(BookRequestDTO request){
         Book book = Book.builder()
