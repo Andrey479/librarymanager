@@ -24,7 +24,11 @@ public class BookController {
     }
 
     @GetMapping
-    public ResponseEntity<List<BookResponseDTO>> listAll(){
-        return ResponseEntity.status(HttpStatus.OK).body(bookService.listAll());
+    public ResponseEntity<List<BookResponseDTO>> listAll(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) Long authorId,
+            @RequestParam(required = false) Boolean available
+    ){
+        return ResponseEntity.status(HttpStatus.OK).body(bookService.listAllByFilter(title, authorId, available));
     }
 }

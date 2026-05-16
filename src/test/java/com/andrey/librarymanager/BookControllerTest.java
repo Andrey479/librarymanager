@@ -2,6 +2,7 @@ package com.andrey.librarymanager;
 
 import com.andrey.librarymanager.controller.BookController;
 import com.andrey.librarymanager.dto.BookRequestDTO;
+import com.andrey.librarymanager.dto.BookResponseDTO;
 import com.andrey.librarymanager.service.BookService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +13,11 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.ObjectMapper;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -66,5 +70,29 @@ public class BookControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$").isEmpty());
+    }
+
+    @Test
+    void shoulListBooksByTitle() throws Exception{
+        BookResponseDTO bookResponseDTO = new BookResponseDTO(
+                1L,
+                "Código limpo",
+                "978-8576082675",
+                2009,
+                100,
+                100
+        );
+
+        List<BookResponseDTO> bookResponse;
+        bookResponse = new ArrayList<>();
+        bookResponse.add(bookResponseDTO);
+
+        when(bookService.listAllByFilter("Código", null, null))
+                .thenReturn(bookResponse);
+
+        mockMvc.perform(get("/api/books?title=Código"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0].title").value("Código limpo"));
     }
 }

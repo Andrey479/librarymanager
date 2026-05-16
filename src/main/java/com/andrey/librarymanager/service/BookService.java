@@ -6,7 +6,6 @@ import com.andrey.librarymanager.exception.ResourceNotFoundException;
 import com.andrey.librarymanager.model.Book;
 import com.andrey.librarymanager.repository.AuthorRepository;
 import com.andrey.librarymanager.repository.BookRepository;
-import com.andrey.librarymanager.repository.LoanRepository;
 import com.andrey.librarymanager.specification.BookSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
@@ -27,12 +26,6 @@ public class BookService {
             throw new ResourceNotFoundException("The list of author IDs is empty.");
        }
        return toResponse(bookRepository.save(toEntity(request)));
-    }
-
-    public List<BookResponseDTO> listAll(){
-        return bookRepository.findAll().stream()
-                .map(this::toResponse)
-                .toList();
     }
 
     public List<BookResponseDTO> listAllByFilter(String title, Long authorId, Boolean available){
