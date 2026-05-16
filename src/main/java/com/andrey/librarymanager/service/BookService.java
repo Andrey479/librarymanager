@@ -4,11 +4,12 @@ import com.andrey.librarymanager.dto.BookRequestDTO;
 import com.andrey.librarymanager.dto.BookResponseDTO;
 import com.andrey.librarymanager.exception.ResourceNotFoundException;
 import com.andrey.librarymanager.model.Book;
-import com.andrey.librarymanager.model.LoanStatus;
 import com.andrey.librarymanager.repository.AuthorRepository;
 import com.andrey.librarymanager.repository.BookRepository;
 import com.andrey.librarymanager.repository.LoanRepository;
+import com.andrey.librarymanager.specification.BookSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -20,7 +21,6 @@ public class BookService {
 
     private final BookRepository bookRepository;
     private final AuthorRepository authorRepository;
-    private final LoanRepository loanRepository;
 
     public BookResponseDTO register(BookRequestDTO request) {
        if (request.getAuthorsId().isEmpty()) {
@@ -31,6 +31,24 @@ public class BookService {
 
     public List<BookResponseDTO> listAll(){
         return bookRepository.findAll().stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    public List<BookResponseDTO> listAllByFilter(String title, Long authorId, Boolean available){
+
+        Specification<Book> specification = Specification.unrestricted();
+
+        if (title != null) {
+            specification = specification.and(BookSpecification.withTitle(title));
+        }
+        if (authorId != null){
+            specification = specification.and(BookSpecification.withAuthor(authorId));
+        }
+        if (available != null){
+            specification = specification.and(BookSpecification.withAvailable(available));
+        }
+        return bookRepository.findAll(specification).stream()
                 .map(this::toResponse)
                 .toList();
     }
