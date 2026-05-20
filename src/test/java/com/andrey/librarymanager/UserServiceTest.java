@@ -32,7 +32,8 @@ public class UserServiceTest {
         UserRequestDTO userRequestDTO = new UserRequestDTO(
                 "user",
                 "email@email.com",
-                "55 77777-7777"
+                "55 77777-7777",
+                "senha secreta"
         );
         User user = new User();
 

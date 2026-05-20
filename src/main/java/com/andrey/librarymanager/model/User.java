@@ -30,4 +30,8 @@ public class User {
     @NotBlank
     @Column(nullable = false)
     private String phone;
+
+    @NotBlank
+    @Column(nullable = false)
+    private String password;
 }

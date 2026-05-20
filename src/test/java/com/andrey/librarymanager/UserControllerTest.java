@@ -31,7 +31,8 @@ public class UserControllerTest {
         UserRequestDTO userRequestDTO = new UserRequestDTO(
                 "user",
                 "email@email.com",
-                "5555555555"
+                "5555555555",
+                "senha secreta"
         );
 
         mockMvc.perform(post("/api/users")
