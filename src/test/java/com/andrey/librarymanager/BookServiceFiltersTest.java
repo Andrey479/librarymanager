@@ -29,22 +29,18 @@ public class BookServiceFiltersTest {
     @Mock private BookRepository bookRepository;
     @InjectMocks private BookService bookService;
 
-    private Book book;
-    private Author author;
-    private List<Book> bookList;
-
     //todos os testes vão retornar a mesma entidade
     //porque o objetivo é testar os filtros o retorno será testado no controller
     @BeforeEach
     void setUp(){
-        author = Author.builder()
+        Author author = Author.builder()
                 .id(1L)
                 .name("Robert C. Martin")
                 .nationality("Americano")
                 .birthDate(LocalDate.of(1952, 12, 5))
                 .build();
 
-        book = Book.builder()
+        Book book = Book.builder()
                 .id(1L)
                 .title("Código limpo: habilidades práticas do Agile Software")
                 .isbn("978-8576082675")
@@ -54,7 +50,7 @@ public class BookServiceFiltersTest {
                 .authors(Set.of(author))
                 .build();
 
-        bookList = new ArrayList<>();
+        List<Book> bookList = new ArrayList<>();
         bookList.add(book);
 
         when(bookRepository.findAll(any(Specification.class))).thenReturn(bookList);

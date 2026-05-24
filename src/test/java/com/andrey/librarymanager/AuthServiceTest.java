@@ -60,9 +60,7 @@ public class AuthServiceTest {
                 .thenThrow(new UsernameNotFoundException("Deu erro como esperado"));
 
         //act + asset
-        assertThrows(UsernameNotFoundException.class, () -> {
-            authService.login(request);
-        });
+        assertThrows(UsernameNotFoundException.class, () -> authService.login(request));
     }
 
 }

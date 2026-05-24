@@ -2,7 +2,6 @@ package com.andrey.librarymanager;
 
 import com.andrey.librarymanager.controller.AuthController;
 import com.andrey.librarymanager.dto.LoginRequestDTO;
-import com.andrey.librarymanager.dto.LoginResponseDTO;
 import com.andrey.librarymanager.security.JwtService;
 import com.andrey.librarymanager.security.UserDetailsServiceImpl;
 import com.andrey.librarymanager.service.AuthService;
@@ -15,8 +14,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.ObjectMapper;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 

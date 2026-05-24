@@ -3,10 +3,7 @@ package com.andrey.librarymanager;
 import com.andrey.librarymanager.controller.LoanController;
 import com.andrey.librarymanager.dto.LoanRequestDTO;
 import com.andrey.librarymanager.dto.LoanResponseDTO;
-import com.andrey.librarymanager.model.Book;
-import com.andrey.librarymanager.model.Loan;
 import com.andrey.librarymanager.model.LoanStatus;
-import com.andrey.librarymanager.model.User;
 import com.andrey.librarymanager.security.JwtService;
 import com.andrey.librarymanager.security.UserDetailsServiceImpl;
 import com.andrey.librarymanager.service.LoanService;
@@ -57,7 +54,7 @@ public class LoanControllerTest {
         mockMvc.perform(post("/api/loans")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(new LoanRequestDTO(null, null))))
-                .andExpect(status().isBadRequest());;
+                .andExpect(status().isBadRequest());
     }
 
     @Test
