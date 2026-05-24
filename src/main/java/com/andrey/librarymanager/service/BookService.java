@@ -8,12 +8,14 @@ import com.andrey.librarymanager.repository.AuthorRepository;
 import com.andrey.librarymanager.repository.BookRepository;
 import com.andrey.librarymanager.specification.BookSpecification;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BookService {
@@ -23,8 +25,10 @@ public class BookService {
 
     public BookResponseDTO register(BookRequestDTO request) {
        if (request.getAuthorsId().isEmpty()) {
+           log.warn("The list of author IDs is empty.");
             throw new ResourceNotFoundException("The list of author IDs is empty.");
        }
+       log.info("Book successfully registered.");
        return toResponse(bookRepository.save(toEntity(request)));
     }
 
@@ -41,6 +45,8 @@ public class BookService {
         if (available != null){
             specification = specification.and(BookSpecification.withAvailable(available));
         }
+
+        log.info("Books listed successfully");
         return bookRepository.findAll(specification).stream()
                 .map(this::toResponse)
                 .toList();

@@ -12,6 +12,7 @@ import com.andrey.librarymanager.repository.BookRepository;
 import com.andrey.librarymanager.repository.LoanRepository;
 import com.andrey.librarymanager.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -20,6 +21,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class LoanService {
@@ -29,39 +31,18 @@ public class LoanService {
     private final UserRepository userRepository;
 
     public LoanResponseDTO register(LoanRequestDTO request){
-        Optional<Book> optionalBook = bookRepository.findById(request.getBookId());
-        Optional<User> optionalUser = userRepository.findById(request.getUserId());
+        User user = validateOptionalUser(request);
+        Book book = validateOptionalBook(request);
 
-        if (optionalBook.isEmpty() || optionalUser.isEmpty()){
-            throw new ResourceNotFoundException("Book or User without content");
-        }
+        validateIfHasActiveLoan(request);
 
-        Book book = optionalBook.get();
-        if (book.getAvailableCopies() == 0){
-            throw new BusinessException("No copies of this book are available for loan.");
-        }
-
-        boolean hasActiveLoan = loanRepository.existsByBookIdAndUserIdAndStatus(
-                request.getBookId(),
-                request.getUserId(),
-                LoanStatus.ACTIVE
-        );
-        if (hasActiveLoan){
-            throw new BusinessException("This book already has an active loan with the user.");
-        }
-
-        book.setAvailableCopies(book.getAvailableCopies() - 1);
-        return toResponse(loanRepository.save(toEntity(book, optionalUser.get())));
+        log.info("Loan successfully registered.");
+        return toResponse(loanRepository.save(toEntity(book, user)));
     }
 
     public LoanResponseDTO returnLoan(Long loanId, LocalDate returnDate){
 
-        Optional<Loan> optionalLoan = loanRepository.findById(loanId);
-        if (optionalLoan.isEmpty()){
-            throw new ResourceNotFoundException("Loan without content");
-        }
-
-        Loan loan = optionalLoan.get();
+        Loan loan = validateLoan(loanId);
         int result = loan.getExpectedReturnDate().compareTo(returnDate);
 
         if (result < 0){
@@ -78,10 +59,12 @@ public class LoanService {
         loan.setStatus(LoanStatus.RETURNED);
         loan.setBook(book);
 
+        log.info("A loan was repaid.");
         return toResponse(loan);
     }
 
     public List<LoanResponseDTO> listLoansByStatus(LoanStatus loanStatus){
+        log.info("All the loans were listed.");
         return loanRepository.findAllByStatus(loanStatus)
                 .stream()
                 .map(this::toResponse)
@@ -110,5 +93,58 @@ public class LoanService {
                 .status(LoanStatus.ACTIVE)
                 .fine(BigDecimal.ZERO)
                 .build();
+    }
+
+    private Book validateOptionalBook(LoanRequestDTO request) {
+
+        Optional<Book> optionalBook = bookRepository.findById(request.getBookId());
+
+        if (optionalBook.isEmpty()){
+            log.warn("Book is empty");
+            throw new ResourceNotFoundException("Book without content");
+        }
+
+        Book book = optionalBook.get();
+        validateAvailableCopies(book);
+        book.setAvailableCopies(book.getAvailableCopies() - 1);
+        return book;
+    }
+
+    private User validateOptionalUser(LoanRequestDTO request){
+        Optional<User> optionalUser = userRepository.findById(request.getUserId());
+
+        if (optionalUser.isEmpty()) {
+            log.warn("User is empty");
+            throw new ResourceNotFoundException("User without concent");
+        }
+        return optionalUser.get();
+    }
+
+    private void validateAvailableCopies(Book book){
+        if (book.getAvailableCopies() == 0){
+            log.warn("No copies of this book are available for loan. {}", 0);
+            throw new BusinessException("No copies of this book are available for loan.");
+        }
+    }
+
+    private void validateIfHasActiveLoan(LoanRequestDTO request){
+        boolean hasActiveLoan = loanRepository.existsByBookIdAndUserIdAndStatus(
+                request.getBookId(),
+                request.getUserId(),
+                LoanStatus.ACTIVE
+        );
+        if (hasActiveLoan){
+            log.warn("This book already has an active loan with the user.");
+            throw new BusinessException("This book already has an active loan with the user.");
+        }
+    }
+
+    private Loan validateLoan(Long loanId){
+        Optional<Loan> optionalLoan = loanRepository.findById(loanId);
+        if (optionalLoan.isEmpty()){
+            log.warn("Loan without content");
+            throw new ResourceNotFoundException("Loan without content");
+        }
+        return optionalLoan.get();
     }
 }

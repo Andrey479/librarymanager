@@ -5,10 +5,12 @@ import com.andrey.librarymanager.dto.AuthorResponseDTO;
 import com.andrey.librarymanager.model.Author;
 import com.andrey.librarymanager.repository.AuthorRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthorService {
@@ -16,10 +18,12 @@ public class AuthorService {
     private final AuthorRepository authorRepository;
 
     public AuthorResponseDTO register(AuthorRequestDTO request) {
+        log.info("Author successfully registered.");
         return toResponse(authorRepository.save(toEntity(request)));
     }
 
     public List<AuthorResponseDTO> listAll() {
+        log.info("Success in listing all authors.");
         return authorRepository.findAll().stream()
                 .map(this::toResponse)
                 .toList();

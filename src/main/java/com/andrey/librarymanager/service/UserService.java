@@ -5,11 +5,13 @@ import com.andrey.librarymanager.dto.UserResponseDTO;
 import com.andrey.librarymanager.model.User;
 import com.andrey.librarymanager.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -18,10 +20,12 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public UserResponseDTO register(UserRequestDTO request) {
+        log.info("User successfully registered.");
         return toResponse(userRepository.save(toEntity(request)));
     }
 
     public List<UserResponseDTO> listAll(){
+        log.info("All users listed correctly.");
         return userRepository.findAll().stream()
                 .map(this::toResponse)
                 .toList();

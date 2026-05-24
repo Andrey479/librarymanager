@@ -72,18 +72,6 @@ public class LoanServiceTest {
 
     @Test
     void shouldThrowExceptionWhenBookIsNotAvailable(){
-        //arrange
-        Book book = Book.builder()
-                .id(1L)
-                .title("title")
-                .isbn("isbn")
-                .publicationYear(2000)
-                .totalCopies(100)
-                .availableCopies(0)
-                .authors(Set.of())
-                .build();
-
-        when(bookRepository.findById(any(Long.class))).thenReturn(Optional.of(book));
 
         //act + assert
         assertThrows(RuntimeException.class, () -> loanService.register(new LoanRequestDTO(1L, 1L)));
@@ -107,16 +95,6 @@ public class LoanServiceTest {
                 .totalCopies(1000)
                 .availableCopies(1)
                 .authors(Set.of())
-                .build();
-
-        Loan loan = Loan.builder()
-                .id(1L)
-                .book(book)
-                .user(user)
-                .loanDate(LocalDate.now())
-                .expectedReturnDate(LocalDate.now().plusDays(14L))
-                .status(LoanStatus.ACTIVE)
-                .fine(BigDecimal.ZERO)
                 .build();
 
         when(bookRepository.findById(any(Long.class))).thenReturn(Optional.of(book));
@@ -231,11 +209,7 @@ public class LoanServiceTest {
                 .user(User.builder().build())
                 .status(LoanStatus.ACTIVE)
                 .build();
-        Loan loan2 = Loan.builder()
-                .book(Book.builder().build())
-                .user(User.builder().build())
-                .status(LoanStatus.RETURNED)
-                .build();
+
         Loan loan3 = Loan.builder()
                 .book(Book.builder().build())
                 .user(User.builder().build())
