@@ -2,6 +2,8 @@ package com.andrey.librarymanager;
 
 import com.andrey.librarymanager.controller.AuthorController;
 import com.andrey.librarymanager.dto.AuthorRequestDTO;
+import com.andrey.librarymanager.security.JwtService;
+import com.andrey.librarymanager.security.UserDetailsServiceImpl;
 import com.andrey.librarymanager.service.AuthorService;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
@@ -25,6 +27,12 @@ public class AuthorControllerTest {
 
     @MockitoBean
     private AuthorService authorService;
+
+    @MockitoBean
+    private JwtService jwtService;
+
+    @MockitoBean
+    private UserDetailsServiceImpl userDetailsService;
 
     @Test
     void shouldRegisterAuthorSuccessfully() throws Exception{

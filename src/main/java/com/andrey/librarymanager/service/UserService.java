@@ -5,6 +5,7 @@ import com.andrey.librarymanager.dto.UserResponseDTO;
 import com.andrey.librarymanager.model.User;
 import com.andrey.librarymanager.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public UserResponseDTO register(UserRequestDTO request) {
         return toResponse(userRepository.save(toEntity(request)));
@@ -30,6 +32,7 @@ public class UserService {
         user.setName(request.getName());
         user.setEmail(request.getEmail());
         user.setPhone(request.getPhone());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         return user;
     }
 

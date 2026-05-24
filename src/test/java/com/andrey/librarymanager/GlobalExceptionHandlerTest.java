@@ -3,10 +3,9 @@ package com.andrey.librarymanager;
 import com.andrey.librarymanager.dto.LoanRequestDTO;
 import com.andrey.librarymanager.exception.BusinessException;
 import com.andrey.librarymanager.exception.ResourceNotFoundException;
-import com.andrey.librarymanager.service.AuthorService;
-import com.andrey.librarymanager.service.BookService;
-import com.andrey.librarymanager.service.LoanService;
-import com.andrey.librarymanager.service.UserService;
+import com.andrey.librarymanager.security.JwtService;
+import com.andrey.librarymanager.security.UserDetailsServiceImpl;
+import com.andrey.librarymanager.service.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
@@ -32,6 +31,9 @@ public class GlobalExceptionHandlerTest {
     @MockitoBean private AuthorService authorService;
     @MockitoBean private BookService bookService;
     @MockitoBean private UserService userService;
+    @MockitoBean private AuthService authService;
+    @MockitoBean private JwtService jwtService;
+    @MockitoBean private UserDetailsServiceImpl userDetailsService;
 
     @Test
     void shouldResourceNotFoundException() throws Exception{

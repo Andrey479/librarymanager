@@ -7,6 +7,8 @@ import com.andrey.librarymanager.model.Book;
 import com.andrey.librarymanager.model.Loan;
 import com.andrey.librarymanager.model.LoanStatus;
 import com.andrey.librarymanager.model.User;
+import com.andrey.librarymanager.security.JwtService;
+import com.andrey.librarymanager.security.UserDetailsServiceImpl;
 import com.andrey.librarymanager.service.LoanService;
 import tools.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -35,6 +37,12 @@ public class LoanControllerTest {
 
     @MockitoBean
     private LoanService loanService;
+
+    @MockitoBean
+    private JwtService jwtService;
+
+    @MockitoBean
+    private UserDetailsServiceImpl userDetailsService;
 
     @Test
     void shouldRegisterLoanSuccessfully() throws Exception {

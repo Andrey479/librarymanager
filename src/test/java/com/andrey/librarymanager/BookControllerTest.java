@@ -3,6 +3,8 @@ package com.andrey.librarymanager;
 import com.andrey.librarymanager.controller.BookController;
 import com.andrey.librarymanager.dto.BookRequestDTO;
 import com.andrey.librarymanager.dto.BookResponseDTO;
+import com.andrey.librarymanager.security.JwtService;
+import com.andrey.librarymanager.security.UserDetailsServiceImpl;
 import com.andrey.librarymanager.service.BookService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,12 @@ public class BookControllerTest {
 
     @MockitoBean
     private BookService bookService;
+
+    @MockitoBean
+    private JwtService jwtService;
+
+    @MockitoBean
+    private UserDetailsServiceImpl userDetailsService;
 
     @Test
     void shouldRegisterBookSuccessfully() throws Exception {

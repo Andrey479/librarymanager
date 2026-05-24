@@ -2,6 +2,8 @@ package com.andrey.librarymanager;
 
 import com.andrey.librarymanager.controller.UserController;
 import com.andrey.librarymanager.dto.UserRequestDTO;
+import com.andrey.librarymanager.security.JwtService;
+import com.andrey.librarymanager.security.UserDetailsServiceImpl;
 import com.andrey.librarymanager.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,12 @@ public class UserControllerTest {
 
     @MockitoBean
     private UserService userService;
+
+    @MockitoBean
+    private JwtService jwtService;
+
+    @MockitoBean
+    private UserDetailsServiceImpl userDetailsService;
 
     @Test
     void shouldRegisterUserSuccessfully () throws Exception {
