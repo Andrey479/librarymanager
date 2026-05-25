@@ -11,6 +11,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
@@ -29,9 +33,12 @@ public class BookServiceFiltersTest {
     @Mock private BookRepository bookRepository;
     @InjectMocks private BookService bookService;
 
+    Pageable pageable;
+
     //todos os testes vão retornar a mesma entidade
     //porque o objetivo é testar os filtros o retorno será testado no controller
     @BeforeEach
+    @SuppressWarnings("unchecked")
     void setUp(){
         Author author = Author.builder()
                 .id(1L)
@@ -52,52 +59,53 @@ public class BookServiceFiltersTest {
 
         List<Book> bookList = new ArrayList<>();
         bookList.add(book);
+        pageable = PageRequest.of(0, 10);
+        Page<Book> mockPage = new PageImpl<>(bookList, pageable, bookList.size());
 
-        when(bookRepository.findAll(any(Specification.class))).thenReturn(bookList);
+        when(bookRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(mockPage);
     }
 
     @Test
     void shouldReturnBookByTitle(){
-        List<BookResponseDTO> result = bookService.listAllByFilter("Clean", null, null);
-        assertEquals("Código limpo: habilidades práticas do Agile Software", result.getFirst().getTitle());
+        Page<BookResponseDTO> result = bookService.listAllByFilter("Clean", null, null, pageable);
+        assertEquals("Código limpo: habilidades práticas do Agile Software", result.getContent().getFirst().getTitle());
     }
 
     @Test
     void shouldReturnBookByAuthor(){
-        List<BookResponseDTO> result = bookService.listAllByFilter(null, 1L, null);
-        assertEquals(1L, result.getFirst().getId());
+        Page<BookResponseDTO> result = bookService.listAllByFilter(null, 1L, null, pageable);
+        assertEquals(1L, result.getContent().getFirst().getId());
     }
 
     @Test
     void shouldReturnBookByAvailability(){
-        List<BookResponseDTO> result = bookService.listAllByFilter(null, null, Boolean.TRUE);
-        assertEquals("978-8576082675", result.getFirst().getIsbn());
+        Page<BookResponseDTO> result = bookService.listAllByFilter(null, null, Boolean.TRUE, pageable);
+        assertEquals("978-8576082675", result.getContent().getFirst().getIsbn());
     }
 
     @Test
     void shouldReturnBookByTitleAndAuthor() {
-        List<BookResponseDTO> result = bookService.listAllByFilter("Código limpo: habilidades práticas do Agile Software",
-                1L,
-                null);
-        assertEquals(2009, result.getFirst().getPublicationYear());
+        Page<BookResponseDTO> result = bookService.listAllByFilter("Código limpo: habilidades práticas do Agile Software",
+                1L, null, pageable);
+        assertEquals(2009, result.getContent().getFirst().getPublicationYear());
     }
 
     @Test
     void shouldReturnBookByTitleAndAvailability(){
-        List<BookResponseDTO> result = bookService.listAllByFilter("Clean", null, Boolean.TRUE);
-        assertEquals(100, result.getFirst().getTotalCopies());
+        Page<BookResponseDTO> result = bookService.listAllByFilter("Clean", null, Boolean.TRUE, pageable);
+        assertEquals(100, result.getContent().getFirst().getTotalCopies());
     }
 
     @Test
     void shouldReturnBookByAuthorAndAvailability(){
-        List<BookResponseDTO> result = bookService.listAllByFilter(null, 1L, Boolean.TRUE);
-        assertEquals(100, result.getFirst().getAvailableCopies());
+        Page<BookResponseDTO> result = bookService.listAllByFilter(null, 1L, Boolean.TRUE, pageable);
+        assertEquals(100, result.getContent().getFirst().getAvailableCopies());
     }
 
     @Test
     void shouldReturnBookByTitleAndAuthorAndAvailability(){
-        List<BookResponseDTO> result = bookService.listAllByFilter("Codigo Limpo", 1L, Boolean.TRUE);
+        Page<BookResponseDTO> result = bookService.listAllByFilter("Codigo Limpo", 1L, Boolean.TRUE, pageable);
         assertNotNull(result);
-        assertEquals(1, result.size());
+        assertEquals(1, result.getContent().size());
     }
 }

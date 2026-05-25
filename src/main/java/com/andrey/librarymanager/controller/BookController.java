@@ -5,11 +5,12 @@ import com.andrey.librarymanager.dto.BookResponseDTO;
 import com.andrey.librarymanager.service.BookService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/books")
@@ -24,11 +25,13 @@ public class BookController {
     }
 
     @GetMapping
-    public ResponseEntity<List<BookResponseDTO>> listAll(
+    public ResponseEntity<Page<BookResponseDTO>> listAll(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) Long authorId,
-            @RequestParam(required = false) Boolean available
+            @RequestParam(required = false) Boolean available,
+            @PageableDefault() Pageable pageable
     ){
-        return ResponseEntity.status(HttpStatus.OK).body(bookService.listAllByFilter(title, authorId, available));
+        Page<BookResponseDTO> response =bookService.listAllByFilter(title, authorId, available, pageable);
+        return ResponseEntity.ok(response);
     }
 }

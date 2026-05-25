@@ -1,6 +1,7 @@
 package com.andrey.librarymanager;
 
 import com.andrey.librarymanager.dto.UserRequestDTO;
+import com.andrey.librarymanager.dto.UserResponseDTO;
 import com.andrey.librarymanager.model.User;
 import com.andrey.librarymanager.repository.UserRepository;
 import com.andrey.librarymanager.service.UserService;
@@ -10,10 +11,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -53,8 +60,23 @@ public class UserServiceTest {
 
     @Test
     void shouldListAllUsers(){
-        when(userRepository.findAll()).thenReturn(List.of());
-        assertNotNull(userService.listAll());
-        verify(userRepository).findAll();
+        //arrange
+        List<User> users = new ArrayList<>();
+        users.add(User.builder().id(5L).build());
+
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<User> userPage = new PageImpl<>(
+                users,
+                pageable,
+                users.size()
+        );
+
+        when(userRepository.findAll(pageable)).thenReturn(userPage);
+
+        //act
+        Page<UserResponseDTO> response = userService.listAll(pageable);
+
+        //assert
+        assertEquals(5L, response.getContent().getFirst().getId());
     }
 }

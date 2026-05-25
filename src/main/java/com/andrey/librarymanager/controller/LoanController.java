@@ -6,12 +6,14 @@ import com.andrey.librarymanager.model.LoanStatus;
 import com.andrey.librarymanager.service.LoanService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/loans")
@@ -34,10 +36,12 @@ public class LoanController {
     }
 
     @GetMapping
-    public ResponseEntity<List<LoanResponseDTO>> returnLoanByStatus (
+    public ResponseEntity<Page<LoanResponseDTO>> returnLoanByStatus (
         @Valid
-        @RequestParam LoanStatus loanStatus
+        @RequestParam LoanStatus loanStatus,
+        @PageableDefault() Pageable pageable
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(loanService.listLoansByStatus(loanStatus));
+        Page<LoanResponseDTO> response = loanService.listLoansByStatus(loanStatus, pageable);
+        return ResponseEntity.ok(response);
     }
 }

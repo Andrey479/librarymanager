@@ -9,11 +9,12 @@ import com.andrey.librarymanager.repository.BookRepository;
 import com.andrey.librarymanager.specification.BookSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -32,7 +33,7 @@ public class BookService {
        return toResponse(bookRepository.save(toEntity(request)));
     }
 
-    public List<BookResponseDTO> listAllByFilter(String title, Long authorId, Boolean available){
+    public Page<BookResponseDTO> listAllByFilter(String title, Long authorId, Boolean available, Pageable pageable){
 
         Specification<Book> specification = Specification.unrestricted();
 
@@ -46,10 +47,11 @@ public class BookService {
             specification = specification.and(BookSpecification.withAvailable(available));
         }
 
+
+        Page<Book> books = bookRepository.findAll(specification, pageable);
         log.info("Books listed successfully");
-        return bookRepository.findAll(specification).stream()
-                .map(this::toResponse)
-                .toList();
+
+        return books.map(this::toResponse);
     }
 
     private Book toEntity(BookRequestDTO request){

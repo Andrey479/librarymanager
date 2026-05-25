@@ -13,12 +13,13 @@ import com.andrey.librarymanager.repository.LoanRepository;
 import com.andrey.librarymanager.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -63,12 +64,10 @@ public class LoanService {
         return toResponse(loan);
     }
 
-    public List<LoanResponseDTO> listLoansByStatus(LoanStatus loanStatus){
+    public Page<LoanResponseDTO> listLoansByStatus(LoanStatus loanStatus, Pageable pageable){
+        Page<Loan> loans = loanRepository.findAllByStatus(loanStatus, pageable);
         log.info("All the loans were listed.");
-        return loanRepository.findAllByStatus(loanStatus)
-                .stream()
-                .map(this::toResponse)
-                .toList();
+        return loans.map(this::toResponse);
     }
 
     private LoanResponseDTO toResponse(Loan loan){

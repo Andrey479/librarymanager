@@ -10,15 +10,22 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -74,10 +81,12 @@ public class BookControllerTest {
 
     @Test
     void shouldListAllBooks() throws Exception{
+        Page<BookResponseDTO> emptyPage = new PageImpl<>(Collections.emptyList(), PageRequest.of(0, 10), 0);
+        when(bookService.listAllByFilter(any(), any(), any(), any())).thenReturn(emptyPage);
+
         mockMvc.perform(get("/api/books"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$").isEmpty());
+                .andExpect(jsonPath("$.content", hasSize(0)));
     }
 
     @Test
@@ -95,12 +104,21 @@ public class BookControllerTest {
         bookResponse = new ArrayList<>();
         bookResponse.add(bookResponseDTO);
 
-        when(bookService.listAllByFilter("Código", null, null))
-                .thenReturn(bookResponse);
+        PageRequest pageRequest = PageRequest.of(0,10);
 
-        mockMvc.perform(get("/api/books?title=Código"))
+        Page<BookResponseDTO> pageBook = new PageImpl<>(
+                bookResponse,
+                pageRequest,
+                bookResponse.size()
+        );
+
+        when(bookService.listAllByFilter(any(), any(), any(), any(Pageable.class))).thenReturn(pageBook);
+
+        mockMvc.perform(get("/api/books")
+                .param("page", "0")
+                .param("size", "10"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].title").value("Código limpo"));
+                .andExpect(jsonPath("$.content", hasSize(1)))
+                .andExpect(jsonPath("$.content[0].title").value("Código limpo"));
     }
 }

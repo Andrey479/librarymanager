@@ -5,11 +5,12 @@ import com.andrey.librarymanager.dto.UserResponseDTO;
 import com.andrey.librarymanager.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -24,7 +25,8 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserResponseDTO>> listAll(){
-        return ResponseEntity.status(HttpStatus.OK).body(userService.listAll());
+    public ResponseEntity<Page<UserResponseDTO>> listAll(@PageableDefault() Pageable pageable){
+        Page<UserResponseDTO> response = userService.listAll(pageable);
+        return ResponseEntity.ok(response);
     }
 }

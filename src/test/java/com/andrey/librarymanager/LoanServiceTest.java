@@ -15,6 +15,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -220,14 +224,16 @@ public class LoanServiceTest {
         loanList.add(loan1);
         loanList.add(loan3);
 
-        when(loanRepository.findAllByStatus(any(LoanStatus.class))).thenReturn(loanList);
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Loan> mockPage = new PageImpl<>(loanList, pageable, loanList.size());
+
+        when(loanRepository.findAllByStatus(any(LoanStatus.class), any(Pageable.class))).thenReturn(mockPage);
 
         //act
-        List<LoanResponseDTO> loansByStatus = loanService.listLoansByStatus(LoanStatus.ACTIVE);
+        Page<LoanResponseDTO> loansByStatus = loanService.listLoansByStatus(LoanStatus.ACTIVE, pageable);
 
         //asert
         assertNotNull(loansByStatus);
-        assertEquals(2, loansByStatus.size());
-        verify(loanRepository).findAllByStatus(any(LoanStatus.class));
+        assertEquals(2, loansByStatus.getContent().size());
     }
 }

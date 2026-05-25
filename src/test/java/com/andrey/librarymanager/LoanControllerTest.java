@@ -7,6 +7,10 @@ import com.andrey.librarymanager.model.LoanStatus;
 import com.andrey.librarymanager.security.JwtService;
 import com.andrey.librarymanager.security.UserDetailsServiceImpl;
 import com.andrey.librarymanager.service.LoanService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import tools.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,11 +88,20 @@ public class LoanControllerTest {
         loanList.add(loan1);
         loanList.add(loan2);
 
-        when(loanService.listLoansByStatus(LoanStatus.ACTIVE)).thenReturn(loanList);
+        PageRequest pageRequest = PageRequest.of(0,10);
+        Page<LoanResponseDTO> pageLoan = new PageImpl<>(
+                loanList,
+                pageRequest,
+                loanList.size()
+        );
+        Pageable pageable = PageRequest.of(0, 10);
+        when(loanService.listLoansByStatus(LoanStatus.ACTIVE, pageable)).thenReturn(pageLoan);
 
         mockMvc.perform(get("/api/loans")
+                .param("page", "0")
+                .param("size", "10")
                 .param("loanStatus", LoanStatus.ACTIVE.toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(3));
+                .andExpect(jsonPath("$.content[0].id").value(3));
     }
 }

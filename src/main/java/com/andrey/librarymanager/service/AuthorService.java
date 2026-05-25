@@ -6,9 +6,9 @@ import com.andrey.librarymanager.model.Author;
 import com.andrey.librarymanager.repository.AuthorRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -22,11 +22,11 @@ public class AuthorService {
         return toResponse(authorRepository.save(toEntity(request)));
     }
 
-    public List<AuthorResponseDTO> listAll() {
+    public Page<AuthorResponseDTO> listAll(Pageable pageable) {
+        Page<Author> authors = authorRepository.findAll(pageable);
         log.info("Success in listing all authors.");
-        return authorRepository.findAll().stream()
-                .map(this::toResponse)
-                .toList();
+
+        return authors.map(this::toResponse);
     }
 
     private Author toEntity(AuthorRequestDTO request) {

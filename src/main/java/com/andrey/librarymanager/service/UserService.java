@@ -6,10 +6,10 @@ import com.andrey.librarymanager.model.User;
 import com.andrey.librarymanager.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -24,11 +24,10 @@ public class UserService {
         return toResponse(userRepository.save(toEntity(request)));
     }
 
-    public List<UserResponseDTO> listAll(){
+    public Page<UserResponseDTO> listAll(Pageable pageable){
         log.info("All users listed correctly.");
-        return userRepository.findAll().stream()
-                .map(this::toResponse)
-                .toList();
+        Page<User> users = userRepository.findAll(pageable);
+        return users.map(this::toResponse);
     }
 
     private User toEntity(UserRequestDTO request) {
