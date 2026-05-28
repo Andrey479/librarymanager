@@ -1,8 +1,10 @@
 package com.andrey.librarymanager;
 
 import com.andrey.librarymanager.controller.LoanController;
+import com.andrey.librarymanager.dto.BookLoanCountProjection;
 import com.andrey.librarymanager.dto.LoanRequestDTO;
 import com.andrey.librarymanager.dto.LoanResponseDTO;
+import com.andrey.librarymanager.dto.UserResponseDTO;
 import com.andrey.librarymanager.model.LoanStatus;
 import com.andrey.librarymanager.security.JwtService;
 import com.andrey.librarymanager.security.UserDetailsServiceImpl;
@@ -103,5 +105,89 @@ public class LoanControllerTest {
                 .param("loanStatus", LoanStatus.ACTIVE.toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].id").value(3));
+    }
+
+    @Test
+    void shouldListUsersWithOverdueStatus() throws Exception {
+
+        UserResponseDTO userResponseDTO = new UserResponseDTO(
+                1L,
+                "Andrey",
+                "email@gmail.com",
+                "+55 (11) 91234-5678"
+        );
+
+        UserResponseDTO userResponseDTO2 = new UserResponseDTO(
+                2L,
+                "Claude",
+                "claude@gmail.com",
+                "+55 (21) 98765-4321"
+        );
+
+        List<UserResponseDTO> userResponseList = List.of(userResponseDTO, userResponseDTO2);
+
+        Pageable pageable = PageRequest.of(0,10);
+
+        Page<UserResponseDTO> overdueUsers = new PageImpl<>(
+                userResponseList,
+                pageable,
+                userResponseList.size()
+        );
+
+        when(loanService.listUsersWithOverdueLoans(LoanStatus.OVERDUE, pageable)).thenReturn(overdueUsers);
+
+        mockMvc.perform(get("/api/loans/overdue-users")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("loanStatus", LoanStatus.OVERDUE.toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].name").value("Andrey"));
+    }
+
+    @Test
+    void shouldListMostBorrowedBooks() throws Exception {
+        BookLoanCountProjection proj1 = new BookLoanCountProjection() {
+            @Override
+            public Long getBookId() {
+                return 0L;
+            }
+
+            @Override
+            public Long getQuantity() {
+                return 10L;
+            }
+        };
+
+        BookLoanCountProjection proj2 = new BookLoanCountProjection() {
+            @Override
+            public Long getBookId() {
+                return 0L;
+            }
+
+            @Override
+            public Long getQuantity() {
+                return 5L;
+            }
+        };
+
+        List<BookLoanCountProjection> projectionList = new ArrayList<>();
+        projectionList.add(proj1);
+        projectionList.add(proj2);
+
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Page<BookLoanCountProjection> loanPage = new PageImpl<>(
+                projectionList,
+                pageable,
+                projectionList.size()
+        );
+
+        when(loanService.listMostBorrowedBooks(pageable)).thenReturn(loanPage);
+
+        mockMvc.perform(get("/api/loans/most-borrowed")
+                        .param("page", "0")
+                        .param("size", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].quantity").value(10L));
     }
 }

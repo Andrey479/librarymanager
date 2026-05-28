@@ -39,7 +39,7 @@ public class UserService {
         return user;
     }
 
-    private UserResponseDTO toResponse (User user) {
+    public UserResponseDTO toResponse (User user) {
         UserResponseDTO userResponseDTO = new UserResponseDTO();
         userResponseDTO.setId(user.getId());
         userResponseDTO.setName(user.getName());

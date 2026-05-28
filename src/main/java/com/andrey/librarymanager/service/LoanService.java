@@ -1,7 +1,9 @@
 package com.andrey.librarymanager.service;
 
+import com.andrey.librarymanager.dto.BookLoanCountProjection;
 import com.andrey.librarymanager.dto.LoanRequestDTO;
 import com.andrey.librarymanager.dto.LoanResponseDTO;
+import com.andrey.librarymanager.dto.UserResponseDTO;
 import com.andrey.librarymanager.exception.BusinessException;
 import com.andrey.librarymanager.exception.ResourceNotFoundException;
 import com.andrey.librarymanager.model.Book;
@@ -30,6 +32,7 @@ public class LoanService {
     private final LoanRepository loanRepository;
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
 
     public LoanResponseDTO register(LoanRequestDTO request){
         User user = validateOptionalUser(request);
@@ -68,6 +71,18 @@ public class LoanService {
         Page<Loan> loans = loanRepository.findAllByStatus(loanStatus, pageable);
         log.info("All the loans were listed.");
         return loans.map(this::toResponse);
+    }
+
+    public Page<BookLoanCountProjection> listMostBorrowedBooks(Pageable pageable){
+        Page<BookLoanCountProjection> countProjections = loanRepository.findMostBorrowedBooks(pageable);
+        log.info("List of the most borrowed books");
+        return countProjections;
+    }
+
+    public Page<UserResponseDTO> listUsersWithOverdueLoans(LoanStatus loanStatus, Pageable pageable){
+        Page<User> users = loanRepository.findUsersByStatus(loanStatus, pageable);
+        log.info("Listed users with status: {}", loanStatus.toString());
+        return users.map(userService::toResponse);
     }
 
     private LoanResponseDTO toResponse(Loan loan){

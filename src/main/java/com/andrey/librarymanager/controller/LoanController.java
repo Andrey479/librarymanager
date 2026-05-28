@@ -1,7 +1,9 @@
 package com.andrey.librarymanager.controller;
 
+import com.andrey.librarymanager.dto.BookLoanCountProjection;
 import com.andrey.librarymanager.dto.LoanRequestDTO;
 import com.andrey.librarymanager.dto.LoanResponseDTO;
+import com.andrey.librarymanager.dto.UserResponseDTO;
 import com.andrey.librarymanager.model.LoanStatus;
 import com.andrey.librarymanager.service.LoanService;
 import jakarta.validation.Valid;
@@ -39,9 +41,26 @@ public class LoanController {
     public ResponseEntity<Page<LoanResponseDTO>> returnLoanByStatus (
         @Valid
         @RequestParam LoanStatus loanStatus,
-        @PageableDefault() Pageable pageable
+        @PageableDefault Pageable pageable
     ) {
         Page<LoanResponseDTO> response = loanService.listLoansByStatus(loanStatus, pageable);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/overdue-users")
+    public ResponseEntity<Page<UserResponseDTO>> listUsersWithOverdueLoans(
+            @PageableDefault Pageable pageable,
+            @RequestParam LoanStatus loanStatus
+    ){
+        Page<UserResponseDTO> response = loanService.listUsersWithOverdueLoans(loanStatus, pageable);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/most-borrowed")
+    public ResponseEntity<Page<BookLoanCountProjection>> listMostBorrowedBooks(
+            @PageableDefault Pageable pageable
+    ){
+        Page<BookLoanCountProjection> response = loanService.listMostBorrowedBooks(pageable);
         return ResponseEntity.ok(response);
     }
 }

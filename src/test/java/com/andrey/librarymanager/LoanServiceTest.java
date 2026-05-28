@@ -1,7 +1,9 @@
 package com.andrey.librarymanager;
 
+import com.andrey.librarymanager.dto.BookLoanCountProjection;
 import com.andrey.librarymanager.dto.LoanRequestDTO;
 import com.andrey.librarymanager.dto.LoanResponseDTO;
+import com.andrey.librarymanager.dto.UserResponseDTO;
 import com.andrey.librarymanager.model.Book;
 import com.andrey.librarymanager.model.Loan;
 import com.andrey.librarymanager.model.LoanStatus;
@@ -10,6 +12,7 @@ import com.andrey.librarymanager.repository.BookRepository;
 import com.andrey.librarymanager.repository.LoanRepository;
 import com.andrey.librarymanager.repository.UserRepository;
 import com.andrey.librarymanager.service.LoanService;
+import com.andrey.librarymanager.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,9 +31,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class LoanServiceTest {
@@ -38,6 +39,7 @@ public class LoanServiceTest {
     @Mock private LoanRepository loanRepository;
     @Mock private UserRepository userRepository;
     @Mock private BookRepository bookRepository;
+    @Mock private UserService userService;
 
     @InjectMocks
     private LoanService loanService;
@@ -235,5 +237,67 @@ public class LoanServiceTest {
         //asert
         assertNotNull(loansByStatus);
         assertEquals(2, loansByStatus.getContent().size());
+    }
+
+    @Test
+    void shouldMostBorrowedBooks(){
+
+        //tem que ser assim porquê não faz sentido fazer lista de loans
+        BookLoanCountProjection proj1 = mock(BookLoanCountProjection.class);
+        when(proj1.getQuantity()).thenReturn(10L);
+
+        BookLoanCountProjection proj2 = mock(BookLoanCountProjection.class);
+        when(proj2.getQuantity()).thenReturn(5L);
+
+        List<BookLoanCountProjection> projectionList = new ArrayList<>();
+        projectionList.add(proj1);
+        projectionList.add(proj2);
+
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Page<BookLoanCountProjection> loanPage = new PageImpl<>(
+                projectionList,
+                pageable,
+                projectionList.size()
+        );
+
+        when(loanRepository.findMostBorrowedBooks(any(Pageable.class))).thenReturn(loanPage);
+
+        //act
+        Page<BookLoanCountProjection> countProjections = loanService.listMostBorrowedBooks(pageable);
+
+        //assert
+        assertEquals(10L, countProjections.getContent().getFirst().getQuantity());
+        assertEquals(5L, countProjections.getContent().getLast().getQuantity());
+    }
+
+    @Test
+    void shouldListLoansIfOverdue(){
+        User andrey = User.builder().id(1L).name("Andrey").build();
+        User claude = User.builder().id(2L).name("Claude").build();
+
+        List<User> userList = new ArrayList<>();
+        userList.add(andrey);
+        userList.add(claude);
+
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Page<User> userPage = new PageImpl<>(
+                userList,
+                pageable,
+                userList.size()
+        );
+
+        when(loanRepository.findUsersByStatus(LoanStatus.OVERDUE, pageable)).thenReturn(userPage);
+        when(userService.toResponse(andrey)).thenReturn(new UserResponseDTO(1L, "Andrey", null, null));
+        when(userService.toResponse(claude)).thenReturn(new UserResponseDTO(2L, "Claude", null, null));
+
+        //act
+        Page<UserResponseDTO> users = loanService.listUsersWithOverdueLoans(LoanStatus.OVERDUE, pageable);
+
+        //assert
+        assertEquals("Andrey", users.getContent().getFirst().getName());
+        assertEquals("Claude", users.getContent().getLast().getName());
+        assertEquals(2, users.getContent().size());
     }
 }
