@@ -34,6 +34,7 @@ public class GlobalExceptionHandlerTest {
     @MockitoBean private AuthService authService;
     @MockitoBean private JwtService jwtService;
     @MockitoBean private UserDetailsServiceImpl userDetailsService;
+    @MockitoBean private DashboardService dashboardService;
 
     @Test
     void shouldResourceNotFoundException() throws Exception{
