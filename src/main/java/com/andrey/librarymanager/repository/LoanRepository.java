@@ -16,7 +16,7 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
     boolean existsByBookIdAndUserIdAndStatus(Long bookId, Long userId, LoanStatus status);
     Page<Loan> findAllByStatus(LoanStatus loanStatus, Pageable pageable);
 
-    @Query("SELECT l.book.id AS bookId, COUNT(l) AS quantidade FROM Loan l GROUP BY l.book.id ORDER BY COUNT(l) DESC")
+    @Query("SELECT l.book.id AS bookId, COUNT(l) AS quantity FROM Loan l GROUP BY l.book.id ORDER BY COUNT(l) DESC")
     Page<BookLoanCountProjection> findMostBorrowedBooks(Pageable pageable);
 
     @Query("SELECT DISTINCT l.user FROM Loan l WHERE l.status = :status")
