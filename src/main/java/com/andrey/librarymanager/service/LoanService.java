@@ -62,9 +62,10 @@ public class LoanService {
         book.setAvailableCopies(book.getAvailableCopies() + 1);
         loan.setStatus(LoanStatus.RETURNED);
         loan.setBook(book);
+        loan.setReturnDate(returnDate);
 
         log.info("A loan was repaid.");
-        return toResponse(loan);
+        return toResponse(loanRepository.save(loan));
     }
 
     public Page<LoanResponseDTO> listLoansByStatus(LoanStatus loanStatus, Pageable pageable){
