@@ -3,7 +3,6 @@ package com.andrey.librarymanager.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
 
@@ -32,7 +31,6 @@ public class Book {
     private String isbn;
 
     @NotNull
-    @PastOrPresent
     @Column(nullable = false)
     private Integer publicationYear;
 
