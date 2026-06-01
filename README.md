@@ -8,97 +8,61 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Status-Concluído-success?style=for-the-badge" alt="Status Concluído" />
   <img src="https://img.shields.io/badge/Java-21-ED8B00?style=for-the-badge&logo=java&logoColor=white" alt="Java 21" />
-  <img src="https://img.shields.io/badge/Spring_Boot-4.x-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white" alt="Spring Boot 4" />
-  <img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge" alt="License MIT" />
+  <img src="https://img.shields.io/badge/Spring_Boot-4.x-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white" alt="Spring Boot 3" />
 </p>
 
 <p align="center">
-  <strong>API REST para gestão de bibliotecas pessoais desenvolvida com foco extremo em qualidade de código através de TDD (Test-Driven Development) e Design Incremental.</strong>
+  <strong>API REST estratégica para gestão de acervos, desenvolvida com TDD (Test-Driven Development) e foco em regras de negócio complexas.</strong>
 </p>
 
----
-
-### 📝 Índice
-- [Visão Geral](#-visão-geral)
-- [Funcionalidades](#-funcionalidades)
-- [Demonstração](#-demonstração)
-- [Decisões Técnicas e Aprendizados](#-decisões-técnicas-e-aprendizados)
-- [Stack Tecnológica](#-stack-tecnológica)
-- [Como Executar](#-como-executar)
-- [Documentação da API](#-documentação-da-api)
-- [Autores e Licença](#-autores-e-licença)
+<p align="center">
+  🚀 <strong>Link do Deploy:</strong> <a href="librarymanager-production-d467.up.railway.app">Acesse o Sistema no Railway</a>
+</p>
 
 ---
 
 ### 🔍 Visão Geral
-O **Library Manager** resolve o problema de organização de acervos físicos, permitindo o controle rigoroso de empréstimos, devoluções e multas. O projeto foi construído para demonstrar maturidade técnica em relacionamentos complexos de banco de dados e regras de negócio sólidas, garantindo que nenhum código de produção fosse escrito sem um teste de falha prévio.
+O **Library Manager** não é apenas um CRUD. É um sistema robusto de controle de circulação de livros que gerencia desde a disponibilidade de exemplares até o cálculo rigoroso de multas por atraso. O projeto foi construído sob a metodologia de **Design Incremental**, onde cada funcionalidade foi guiada por testes automatizados antes de sua implementação em produção.
 
-### 🚀 Funcionalidades
-- **Gestão de Acervo:** CRUD completo de livros e autores com relacionamento Many-to-Many.
-- **Filtros Avançados:** Busca de livros por título, autor e disponibilidade via JPA Specification.
-- **Controle de Empréstimos:** Sistema inteligente que verifica disponibilidade de cópias e impede empréstimos duplicados do mesmo livro para o mesmo usuário.
-- **Cálculo de Multas:** Processamento automático de multas de **R$ 2,00 por dia** de atraso na devolução.
-- **Dashboard Estratégico:** Visão geral com total de livros, empréstimos ativos, atrasados e valor total de multas pendentes.
-- **Segurança:** Autenticação via **JWT (JSON Web Token)**, garantindo que usuários acessem apenas seus próprios dados.
+### 📸 Prova Visual de Regras de Negócio
+Abaixo, demonstro a integridade da API através de evidências visuais coletadas durante os testes de integração em produção:
 
-### 📸 Demonstração
-#### Painel de Controle (Dashboard)
-Abaixo, a interface desenvolvida com Thymeleaf e Bootstrap 5 que consolida os dados da biblioteca:
-<p align="center">
-  <img src="docs/images/Screenshot_2026-05-31_17-09-37.png" alt="Dashboard do Sistema" width="800px" />
-</p>
+#### 1. Ciclo de Empréstimo e Devolução
+| Sucesso no Empréstimo (201) | Devolução com Cálculo de Multa (200) |
+| :---: | :---: |
+| <img src="docs/images/Screenshot_2026-05-31_16-23-31.png" width="400px" alt="Empréstimo com Sucesso" /> | <img src="docs/images/Screenshot_2026-05-31_16-38-51.png" width="400px" alt="Devolução com Multa" /> |
+| Registro de empréstimo com data prevista de 14 dias. | **Prova Técnica:** Multa calculada de R$ 92,00 por atraso persistida no banco. |
 
-#### Fluxo de Autenticação e Empréstimo
-Testes de integração realizados via Postman garantindo a integridade dos endpoints:
-<p align="center">
-  <img src="docs/images/Screenshot_2026-05-31_15-17-36.png" alt="Login JWT" width="400px" />
-  <img src="docs/images/Screenshot_2026-05-31_16-23-31.png" alt="Criação de Empréstimo" width="400px" />
-</p>
+#### 2. Validações de Segurança e Negócio (Fail-Fast)
+| Tentativa de Livro Indisponível (422) | Empréstimo Duplicado (422) |
+| :---: | :---: |
+| <img src="docs/images/Screenshot_2026-05-31_16-22-49.png" width="400px" alt="Erro Disponibilidade" /> | <img src="docs/images/Screenshot_2026-05-31_15-22-51.png" width="400px" alt="Erro Duplicata" /> |
+| API impede a saída de livros sem cópias no estoque. | Bloqueio de segundo empréstimo do mesmo livro para o mesmo usuário. |
 
-### 🧠 Decisões Técnicas e Aprendizados
-Esta seção demonstra o **pensamento crítico** aplicado durante o desenvolvimento:
-1. **Abordagem TDD:** O ciclo "Red-Green-Refactor" foi utilizado em todos os serviços. Isso permitiu identificar falhas de lógica antes mesmo da implementação, como o controle de decremento de cópias disponíveis.
-2. **Tratamento de Exceções Customizado:** Implementação de um `GlobalExceptionHandler` para mapear erros de negócio para o status HTTP **422 (Unprocessable Entity)** e recursos não encontrados para **404 (Not Found)**.
-3. **Segurança Stateless:** A escolha por JWT em vez de sessões tradicionais permite que a API seja escalável e siga os princípios REST de forma rigorosa.
-4. **JPA Specification:** Utilizada para criar filtros dinâmicos e reutilizáveis, evitando a explosão de métodos no repositório.
+#### 3. Relatórios e Gestão Visual
+| Dashboard Estratégico (Thymeleaf) | Filtros de Busca Avançados |
+| :---: | :---: |
+| <img src="docs/images/Screenshot_2026-05-31_17-09-37.png" width="400px" alt="Dashboard" /> | <img src="docs/images/Screenshot_2026-05-31_16-55-35.png" width="400px" alt="Busca Avançada" /> |
+| Consolidado de multas e status geral da biblioteca. | Busca dinâmica por título e autor via JPA Specification. |
 
-### 🛠 Stack Tecnológica
-- **Linguagem:** Java 21
-- **Framework:** Spring Boot 4.x
-- **Banco de Dados:** PostgreSQL (Produção) e H2 (Testes)
-- **Segurança:** Spring Security + JWT (JJWT 0.12.x)
-- **Frontend:** Thymeleaf + Bootstrap 5
-- **Documentação:** SpringDoc OpenAPI
-- **Produtividade:** Lombok e Bean Validation
+---
 
-### ⚙️ Como Executar
-#### Pré-requisitos
-- Java 21 ou superior
-- Maven
-- PostgreSQL configurado
+### 🧠 Decisões Técnicas e Trade-offs
+Esta seção justifica o raciocínio por trás da arquitetura escolhida, demonstrando pensamento crítico sobre a stack:
 
-#### Passo a passo
-1. Clone o repositório:
-   ```bash
-   git clone https://github.com/Andrey479/librarymanager.git
-   ```
-2. Configure as variáveis de ambiente:
-   - `DB_PASSWORD`: senha do seu banco PostgreSQL.
-   - `JWT_SECRET`: uma chave de pelo menos 32 caracteres para assinatura dos tokens.
-3. Execute a aplicação:
-   ```bash
-   mvn spring-boot:run
-   ```
-4. O dashboard estará disponível em: `http://localhost:8080/dashboard`.
+*   **TDD (Test-Driven Development):** Adotei o TDD estrito para garantir que 100% das regras de negócio (como o decremento de cópias e o cálculo de multas) fossem validadas antes de existirem no serviço. Isso reduziu o tempo de debug em produção drasticamente.
+*   **JPA Specification vs. Query Methods:** Rejeitei a abordagem de métodos derivados no Repository (ex: `findByTitleAndAuthorAndAvailable`) pois ela causa uma "explosão" de métodos difíceis de manter. Optei por **JPA Specification**, permitindo que o cliente da API combine filtros de forma dinâmica e escalável com uma única implementação.
+*   **Tratamento de Exceções (404 vs 422):** Implementei um `GlobalExceptionHandler` para diferenciar erros de infraestrutura de erros de negócio. Enquanto recursos não encontrados retornam **404**, violações de regras de biblioteca retornam **422 (Unprocessable Entity)**, fornecendo feedback semântico claro para o integrador.
+*   **Estratégia de Autenticação:** Escolhi **Spring Security com JWT (Stateless)** em vez de sessões tradicionais para garantir que a API possa escalar horizontalmente, mantendo a segurança via Bearer Tokens em todas as rotas de escrita.
 
-### 📡 Documentação da API
-Os principais endpoints estão protegidos por autenticação Bearer Token:
-- `POST /api/auth/login`: Realiza login e retorna o token JWT.
-- `GET /api/books`: Lista livros com paginação e filtros opcionais.
-- `POST /api/loans`: Registra um novo empréstimo.
-- `PATCH /api/loans/{id}/return`: Realiza a devolução e calcula multas.
-- `GET /api/loans/most-borrowed`: Relatório de popularidade do acervo.
+---
 
-### 👨‍💻 Autores e Licença
-Desenvolvido por **Andrey Oliveira (Andrey479)**.
-Este projeto está sob a licença **MIT**.
+### 👨‍💻 Autor
+**Andrey Oliveira**
+Especialista em Desenvolvimento Java/Spring Boot.
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/andrey-oliveira-software)
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Andrey479)
+
+---
+*Este projeto foi licenciado sob a [MIT License](LICENSE).*
