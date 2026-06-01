@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  🚀 <strong>Link do Deploy:</strong> <a href="librarymanager-production-d467.up.railway.app">Acesse o Sistema no Railway</a>
+  🚀 <strong>Link do Deploy:</strong> <a href="https://librarymanager-production-d467.up.railway.app" target="_blank" rel="noopener noreferrer">Acesse o Sistema no Railway</a>
 </p>
 
 ---
