@@ -167,6 +167,7 @@ public class LoanServiceTest {
                 .build();
 
         when(loanRepository.findById(any(Long.class))).thenReturn(Optional.of(loan));
+        when(loanRepository.save(any(Loan.class))).thenReturn(loan);
 
         //act
         loanService.returnLoan(loan.getId(), LocalDate.now().plusDays(24L));
@@ -198,6 +199,7 @@ public class LoanServiceTest {
                 .build();
 
         when(loanRepository.findById(any(Long.class))).thenReturn(Optional.of(loan));
+        when(loanRepository.save(any(Loan.class))).thenReturn(loan);
 
         //act
         loanService.returnLoan(loan.getId(), LocalDate.now().plusDays(5L));
