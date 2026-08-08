@@ -2,6 +2,7 @@ package com.andrey.librarymanager.security;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,11 +10,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
-@Setter
 @Service
 public class JwtService {
 
-    @Value("${application.security.jwt.secret-key}") private String secretKey;
+    private final String secretKey;
+
+    public JwtService(@Value("${application.security.jwt.secret-key}") String secretKey) {
+        this.secretKey = secretKey;
+    }
 
     public String generateToken(UserDetails userDetails){
         return Jwts.builder()

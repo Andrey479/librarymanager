@@ -15,8 +15,7 @@ public class JwtServiceTest {
 
     @BeforeEach
     void setup(){
-        jwtService = new JwtService();
-        jwtService.setSecretKey("wqP1!7JewbY$$M%glT2^U%Vc9v04@I0H");
+        jwtService = new JwtService("wqP1!7JewbY$$M%glT2^U%Vc9v04@I0H");
     }
 
     @Test
