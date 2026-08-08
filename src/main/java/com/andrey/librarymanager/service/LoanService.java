@@ -129,8 +129,8 @@ public class LoanService {
         Optional<User> optionalUser = userRepository.findById(request.getUserId());
 
         if (optionalUser.isEmpty()) {
-            log.warn("User is empty");
-            throw new ResourceNotFoundException("User without concent");
+            log.warn("User not found");
+            throw new ResourceNotFoundException("User not found");
         }
         return optionalUser.get();
     }

@@ -216,12 +216,14 @@ public class LoanServiceTest {
                 .book(Book.builder().build())
                 .user(User.builder().build())
                 .status(LoanStatus.ACTIVE)
+                .fine(BigDecimal.ZERO)
                 .build();
 
         Loan loan3 = Loan.builder()
                 .book(Book.builder().build())
                 .user(User.builder().build())
                 .status(LoanStatus.ACTIVE)
+                .fine(BigDecimal.ZERO)
                 .build();
 
         List<Loan> loanList = new ArrayList<>();
