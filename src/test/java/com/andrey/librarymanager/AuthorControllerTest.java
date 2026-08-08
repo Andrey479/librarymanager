@@ -19,6 +19,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.ObjectMapper;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,9 +47,14 @@ public class AuthorControllerTest {
 
     @Test
     void shouldRegisterAuthorSuccessfully() throws Exception{
+        AuthorRequestDTO authorRequestDTO = new AuthorRequestDTO(
+                "test",
+                "test",
+                LocalDate.of(2010, 1, 1)
+        );
         mockMvc.perform(post("/api/authors")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(new AuthorRequestDTO())))
+                .content(new ObjectMapper().writeValueAsString(authorRequestDTO)))
                 .andExpect(status().isCreated());
     }
 
